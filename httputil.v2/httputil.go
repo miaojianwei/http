@@ -102,7 +102,7 @@ type errorRet struct {
 	Errno int    `json:"errno,omitempty"`
 }
 
-func replyErr(skip int, w http.ResponseWriter, err error) {
+func replyErr(calldepth int, w http.ResponseWriter, err error) {
 
 	if err == nil {
 		h := w.Header()
@@ -138,25 +138,25 @@ func replyErr(skip int, w http.ResponseWriter, err error) {
 	}
 
 	detail := errors.Detail(err)
-	logWithReqid(skip+1, w.Header().Get("X-Reqid"), detail)
+	logWithReqid(calldepth+1, w.Header().Get("X-Reqid"), detail)
 
 	Reply(w, code, &ret)
 }
 
-func logWithReqid(lvl int, reqid string, str string) {
+func logWithReqid(calldepth int, reqid string, str string) {
 
 	str = strings.Replace(str, "\n", "\n["+reqid+"]", -1)
-	log.Std.Output(reqid, log.Lwarn, lvl+1, str)
+	log.Std.Output(reqid, log.Lwarn, calldepth+2, str) //注意：Output的calldepth默认值是2而非1！
 }
 
 func Error(w http.ResponseWriter, err error) {
 
-	replyErr(2, w, err)
+	replyErr(1, w, err)
 }
 
 func ReplyErr(w http.ResponseWriter, code int, err string) {
 
-	replyErr(2, w, NewError(code, err))
+	replyErr(1, w, NewError(code, err))
 }
 
 // ---------------------------------------------------------------------------

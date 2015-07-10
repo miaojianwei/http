@@ -10,7 +10,7 @@ import (
 
 func MysqlError(err error, cmd ...interface{}) error {
 
-	return errors.InfoEx(2, syscall.EINVAL, cmd...).Detail(err)
+	return errors.InfoEx(1, syscall.EINVAL, cmd...).Detail(err)
 }
 
 func (r *ErrorInfo) makeError() error {
